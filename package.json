@@ -1,0 +1,23 @@
+{
+  "name": "bomber-real",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run start:dev -w @bomber-real/api\" \"npm run dev -w @bomber-real/web\"",
+    "dev:api": "npm run start:dev -w @bomber-real/api",
+    "dev:web": "npm run dev -w @bomber-real/web",
+    "build": "npm run build -w @bomber-real/api && npm run build -w @bomber-real/web",
+    "lint": "npm run lint -w @bomber-real/api && npm run lint -w @bomber-real/web",
+    "format": "prettier --write .",
+    "db:generate": "npm run prisma:generate -w @bomber-real/api",
+    "db:migrate": "npm run prisma:migrate -w @bomber-real/api"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "prettier": "^3.6.2",
+    "typescript": "^5.9.2"
+  }
+}

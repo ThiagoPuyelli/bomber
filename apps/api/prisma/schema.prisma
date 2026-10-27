@@ -1,0 +1,61 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum GameHistoryStatus {
+  STARTED
+  FINISHED
+}
+
+model GameHistory {
+  id           String            @id @default(cuid())
+  code         String            @unique
+  status       GameHistoryStatus @default(STARTED)
+  hostPlayerId String
+  hostName     String
+  players      Json
+  startedAt    DateTime          @default(now())
+  endedAt      DateTime?
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+  messages     GameMessage[]
+  participants  GameParticipant[]
+}
+
+model User {
+  id           String            @id @default(cuid())
+  username     String            @unique
+  email        String            @unique
+  passwordHash String
+  createdAt    DateTime          @default(now())
+  participants GameParticipant[]
+}
+
+model GameParticipant {
+  gameId   String
+  userId   String
+  username String
+  isHost   Boolean
+  game     GameHistory @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  user     User        @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@id([gameId, userId])
+  @@index([userId, gameId])
+}
+
+model GameMessage {
+  id         String      @id @default(cuid())
+  gameCode   String
+  playerId   String
+  playerName String
+  content    String
+  createdAt  DateTime    @default(now())
+  game       GameHistory @relation(fields: [gameCode], references: [code], onDelete: Cascade)
+
+  @@index([gameCode, createdAt])
+}
